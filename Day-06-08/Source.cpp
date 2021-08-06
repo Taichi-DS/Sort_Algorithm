@@ -1,9 +1,11 @@
-
-
 #include <iostream>
-
+#include <vector>
+#include <cmath>
 using namespace std;
 
+typedef vector<int> bucket;
+
+// Cycle sort 
 void cycle_sort(int arr[], int n)
 {
 	// count number of memory writes 
@@ -58,6 +60,7 @@ void cycle_sort(int arr[], int n)
 	}
 }
 
+// Comb sort
 void comb_sort(int arr[], int n) {
 	int gap = n - 1;
 	while (gap > 0) {
@@ -73,11 +76,73 @@ void comb_sort(int arr[], int n) {
 	}
 }
 
+// Radix sort
+int count_number(int val) {
+	int count = 0;
+	while (val) {
+		val /= 10;
+		count++;
+	}
+	return count;
+}
+
+int get_num_at_n(int val, int n) {
+	if (n == 0)
+		return -1;
+	if (val < pow(10, n - 1))
+		return 0;
+	val = val % int(pow(10, n));
+	while (val >= 10)
+		val /= 10;
+	return val;
+}
+
+
+void radix_sort(int arr[], int size) {
+	// find max element
+	int max;
+	for (int i = 0; i < size; i++) {
+		if (i == 0)
+			max = arr[i];
+		if (arr[i] > max)
+			max = arr[i];
+	}
+	int max_number = count_number(max);
+	int i = max_number;
+	vector<bucket> number;
+	number.resize(10);
+
+	int count = 1;
+	
+	while (count <= max_number) {
+		int index = 0;
+		int id = 0;
+		// put element in arr into number arr 2D
+		for (int i = 0; i < size; i++) {
+			index = get_num_at_n(arr[i], count);
+			number[index].push_back(arr[i]);
+		}
+		// put in to arr
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < number[i].size(); j++) {
+				arr[id++] = number[i][j];
+			}
+		}
+		// clear matrix
+		for (int i = 0; i < 10; i++) {
+			if (number[i].size() != 0)
+				number[i].clear();
+		}
+		//
+		count++;
+	}
+}
+
 int main()
 {
-	int arr[] = { -533, -666, -500, 169, 724, 478, 358, -38, -536, 705, -855, 281, -173, 961, -509, -5, 942, -173, 436, -609, -396, 902, -847, -708, -618, 421, -284, 718, 895, 447, 726, -229, 538, 869, 912, 667, -701, 35, 894, -297, 811, 322, -667, 673, -336, 141, 711, -747, -132, 547, 644 };
+	int arr[] = { 121, 432, 564, 23, 1, 45, 788 };
 	int size = sizeof(arr) / sizeof(int);
-	comb_sort(arr, size);
+	radix_sort(arr, size);
 	for (int i = 0; i < size; i++) {
 		cout << arr[i] << " ";
 	}
